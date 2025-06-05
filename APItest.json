@@ -1,0 +1,499 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "文档管理系统与云南储能项目开发工具集 API",
+    "version": "v0.1.0",
+    "description": "本文档定义了“文档管理系统”和“云南储能电站项目开发工具集”的API端点。"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "本地开发服务器"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "example": "admin"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["admin", "project_manager", "regular_user"],
+            "example": "admin"
+          }
+        }
+      },
+      "UserRegisterRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 6
+          },
+          "role": {
+            "type": "string",
+            "enum": ["admin", "project_manager", "regular_user"],
+            "default": "regular_user"
+          }
+        }
+      },
+      "UserLoginRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "Document": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "filename": {"type": "string", "description": "服务器存储的物理文件名"},
+          "original_filename": {"type": "string", "description": "用户上传的原始文件名"},
+          "title": {"type": "string"},
+          "html_filename": {"type": "string", "nullable": true, "description": "转换后的HTML文件名"},
+          "file_type": {"type": "string", "description": "原始文件的MIME类型"},
+          "size": {"type": "integer", "description": "文件大小 (字节)"},
+          "upload_date": {"type": "string", "format": "date-time"},
+          "uploader_id": {"type": "integer"},
+          "uploader_name": {"type": "string", "description": "上传者用户名 (来自JOIN查询)"},
+          "classification_id": {"type": "integer", "nullable": true},
+          "classification_name": {"type": "string", "nullable": true, "description": "分类名称 (来自JOIN查询)"},
+          "author": {"type": "string", "nullable": true},
+          "keywords": {"type": "string", "nullable": true},
+          "description": {"type": "string", "nullable": true},
+          "is_html_converted": {"type": "boolean"},
+          "is_public": {"type": "boolean"},
+          "thumbnail_path": {"type": "string", "nullable": true}
+        }
+      },
+      "DocumentPublic": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "title": {"type": "string"},
+          "upload_date": {"type": "string", "format": "date-time"},
+          "thumbnail_path": {"type": "string", "nullable": true},
+          "html_filename": {"type": "string"},
+          "original_filename": {"type": "string"},
+          "classification_name": {"type": "string", "nullable": true}
+        }
+      },
+      "DocumentMetadataUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "title": {"type": "string", "nullable": true},
+          "author": {"type": "string", "nullable": true},
+          "keywords": {"type": "string", "nullable": true},
+          "description": {"type": "string", "nullable": true},
+          "classification_id": {"type": "integer", "nullable": true, "description": "传空字符串或null来清除分类"},
+          "is_public": {"type": "boolean", "nullable": true}
+        }
+      },
+      "DocumentRenameRequest": {
+        "type": "object",
+        "required": ["newOriginalUserFilename"],
+        "properties": {
+          "newOriginalUserFilename": {"type": "string", "description": "用户希望的新原始文件名"}
+        }
+      },
+      "Classification": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "name": {"type": "string"},
+          "parent_id": {"type": "integer", "nullable": true},
+          "created_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "ClassificationRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {"type": "string"},
+          "parent_id": {"type": "integer", "nullable": true, "description": "顶级分类则不传或传null"}
+        }
+      },
+      "ApiResponseSuccess": {
+        "type": "object",
+        "properties": {
+          "message": {"type": "string"}
+        }
+      },
+      "ApiResponseError": {
+        "type": "object",
+        "properties": {
+          "message": {"type": "string"}
+        }
+      }
+    },
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "connect.sid",
+        "description": "基于Express Session的Cookie认证。登录后，此Cookie会自动由浏览器在后续请求中发送。"
+      }
+    }
+  },
+  "security": [
+    {
+      "cookieAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "用户注册 (FUR-DM-001.1)",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserRegisterRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "用户注册成功",
+            "content": { "application/json": { "schema": {"type": "object", "properties": {"message":{"type":"string"}, "userId":{"type":"integer"}}}}}
+          },
+          "400": { "description": "请求参数错误或用户已存在", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "用户登录 (FUR-DM-001.2)",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserLoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": { "application/json": { "schema": {"type": "object", "properties": {"message":{"type":"string"}, "user":{"$ref": "#/components/schemas/User"}}}}}
+          },
+          "400": { "description": "请求参数错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "认证失败 (凭证无效)", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "用户登出",
+        "tags": ["Auth"],
+        "responses": {
+          "200": { "description": "登出成功", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseSuccess" }}}},
+          "400": { "description": "用户未登录", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "获取当前登录用户信息",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "成功获取用户信息",
+            "content": { "application/json": { "schema": {"type": "object", "properties": {"user":{"$ref": "#/components/schemas/User"}}}}}
+          },
+          "401": { "description": "用户未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/documents/upload": {
+      "post": {
+        "summary": "上传文档 (FUR-DM-003)",
+        "tags": ["Documents"],
+        "description": "需要 'admin' 或 'project_manager' 角色权限。",
+        "security": [{"cookieAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "document": { "type": "string", "format": "binary", "description": "要上传的文档文件 (HTML, DOCX, PDF, TXT, MD)"},
+                  "title": { "type": "string", "description": "文档标题 (可选)" },
+                  "classification_id": { "type": "integer", "description": "分类ID (可选)" },
+                  "auto_convert": { "type": "boolean", "description": "是否自动转换为HTML (默认true对非HTML文件)", "default": true },
+                  "is_public": { "type": "boolean", "description": "是否在主页公开 (默认false)", "default": false },
+                  "author": { "type": "string", "description": "作者 (可选)" },
+                  "keywords": { "type": "string", "description": "关键词,逗号分隔 (可选)" },
+                  "description": { "type": "string", "description": "描述/摘要 (可选)" }
+                },
+                "required": ["document"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "文档上传成功，可能包含转换信息", "content": { "application/json": { "schema": {"type": "object", "properties": {"message":{"type":"string"}, "documentId":{"type":"integer"}, "originalFile": {"type":"object"}, "htmlFile": {"type":"object", "nullable": true}, "conversionStatus": {"type":"boolean"}}}}}},
+          "400": { "description": "无文件上传或文件类型被拒", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "403": { "description": "权限不足", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/documents/public": {
+      "get": {
+        "summary": "获取公开文档列表 (主页 FUR-DM-002)",
+        "tags": ["Documents"],
+        "security": [], "description": "此接口通常不需要认证即可访问。",
+        "responses": {
+          "200": {
+            "description": "成功获取公开文档列表",
+            "content": { "application/json": { "schema": {"type": "array", "items": {"$ref": "#/components/schemas/DocumentPublic"}}}}
+          },
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/documents/public/html/{htmlFilename}": {
+      "get": {
+        "summary": "获取特定公开HTML文档内容 (FUR-DM-002.3)",
+        "tags": ["Documents"],
+        "security": [], "description": "此接口用于直接访问已转换的HTML文件，通常由静态文件服务处理，但此处也列出以供参考。",
+        "parameters": [
+          {"name": "htmlFilename", "in": "path", "required": true, "description": "HTML文件名", "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": { "description": "HTML文档内容", "content": { "text/html": { "schema": {"type": "string", "format": "binary"}}}},
+          "400": { "description": "无效的文件名"},
+          "404": { "description": "HTML文档未找到"}
+        }
+      }
+    },
+    "/documents/admin": {
+      "get": {
+        "summary": "获取所有文档列表 (后台管理 FUR-DM-005)",
+        "tags": ["Documents"],
+        "description": "需要 'admin' 或 'project_manager' 角色权限。支持查询参数进行筛选、搜索、分页 (待实现)。",
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          {"name": "searchTerm", "in": "query", "required": false, "description": "搜索关键词", "schema": {"type": "string"}},
+          {"name": "classificationId", "in": "query", "required": false, "description": "按分类ID筛选", "schema": {"type": "integer"}},
+          {"name": "page", "in": "query", "required": false, "description": "页码", "schema": {"type": "integer", "default": 1}},
+          {"name": "limit", "in": "query", "required": false, "description": "每页条目数", "schema": {"type": "integer", "default": 10}}
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取文档列表",
+            "content": { "application/json": { "schema": {"type": "array", "items": {"$ref": "#/components/schemas/Document"}}}}
+          },
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "403": { "description": "权限不足", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/documents/{id}": {
+      "get": {
+        "summary": "获取单个文档详情 (后台编辑用)",
+        "tags": ["Documents"],
+        "description": "需要 'admin' 或 'project_manager' 角色权限。",
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "description": "文档ID", "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": { "description": "成功获取文档详情", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Document" }}}},
+          "400": { "description": "无效的ID格式", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "403": { "description": "权限不足", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "404": { "description": "文档未找到", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      },
+      "delete": {
+        "summary": "删除指定文档 (FUR-DM-006)",
+        "tags": ["Documents"],
+        "description": "需要 'admin' 或 'project_manager' 角色权限。会删除数据库记录及关联的物理文件。",
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "description": "要删除的文档ID", "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": { "description": "文档及文件成功删除", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseSuccess" }}}},
+          "207": { "description": "数据库记录已删，部分物理文件删除失败", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseSuccess" }}}},
+          "400": { "description": "无效的ID格式", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "403": { "description": "权限不足", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "404": { "description": "文档未找到", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/documents/{id}/metadata": {
+      "put": {
+        "summary": "编辑指定文档的元数据 (FUR-DM-007)",
+        "tags": ["Documents"],
+        "description": "需要 'admin' 或 'project_manager' 角色权限。",
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "description": "要编辑的文档ID", "schema": {"type": "integer"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DocumentMetadataUpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "元数据更新成功或未改变", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseSuccess" }}}},
+          "400": { "description": "无效的ID或请求体", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "403": { "description": "权限不足", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "404": { "description": "文档未找到", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/documents/{id}/rename": {
+      "put": {
+        "summary": "重命名指定文档 (FUR-DM-008)",
+        "tags": ["Documents"],
+        "description": "需要 'admin' 或 'project_manager' 角色权限。当前简化实现，主要更新用户可见的原始文件名。物理文件名重命名逻辑待完善。",
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "description": "要重命名的文档ID", "schema": {"type": "integer"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DocumentRenameRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "文档名更新成功", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseSuccess" }}}},
+          "400": { "description": "无效的ID或请求体", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "403": { "description": "权限不足", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "404": { "description": "文档未找到", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/classifications": {
+      "post": {
+        "summary": "创建新分类 (FUR-DM-009.1)",
+        "tags": ["Classifications"],
+        "description": "需要 'admin' 或 'project_manager' 角色权限。",
+        "security": [{"cookieAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClassificationRequest" }}}
+        },
+        "responses": {
+          "201": { "description": "分类创建成功", "content": { "application/json": { "schema": {"type": "object", "properties": {"message":{"type":"string"}, "classification":{"$ref": "#/components/schemas/Classification"}}}}}},
+          "400": { "description": "请求参数错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "403": { "description": "权限不足", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      },
+      "get": {
+        "summary": "获取所有分类列表 (FUR-DM-009.4)",
+        "tags": ["Classifications"],
+        "description": "需要认证用户。",
+        "security": [{"cookieAuth": []}],
+        "responses": {
+          "200": { "description": "成功获取分类列表", "content": { "application/json": { "schema": {"type": "array", "items": {"$ref": "#/components/schemas/Classification"}}}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    },
+    "/classifications/{id}": {
+      "get": {
+        "summary": "获取单个分类详情",
+        "tags": ["Classifications"],
+        "description": "需要认证用户。",
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "description": "分类ID", "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": { "description": "成功获取分类详情", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Classification" }}}},
+          "400": { "description": "无效的ID格式", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "404": { "description": "分类未找到", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      },
+      "put": {
+        "summary": "更新指定分类 (FUR-DM-009.1)",
+        "tags": ["Classifications"],
+        "description": "需要 'admin' 或 'project_manager' 角色权限。",
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "description": "要更新的分类ID", "schema": {"type": "integer"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClassificationRequest" }}}
+        },
+        "responses": {
+          "200": { "description": "分类更新成功", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseSuccess" }}}},
+          "400": { "description": "无效的ID或请求体", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "403": { "description": "权限不足", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "404": { "description": "分类未找到或数据未改变", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      },
+      "delete": {
+        "summary": "删除指定分类 (FUR-DM-009.1, FUR-DM-009.5)",
+        "tags": ["Classifications"],
+        "description": "需要 'admin' 或 'project_manager' 角色权限。其下的文档将变为“无分类”，其子分类将变为顶级分类。",
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "description": "要删除的分类ID", "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": { "description": "分类删除成功", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseSuccess" }}}},
+          "400": { "description": "无效的ID格式", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "401": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "403": { "description": "权限不足", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "404": { "description": "分类未找到", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}},
+          "500": { "description": "服务器内部错误", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponseError" }}}}
+        }
+      }
+    }
+  }
+}

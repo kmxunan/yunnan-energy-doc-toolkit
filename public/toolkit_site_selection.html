@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>储能选址辅助工具 - 文档管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { padding-top: 56px; } /* For fixed-top navbar */
+        #map { height: calc(100vh - 56px - 1rem); } /* Adjusted for direct container-fluid usage */
+        .sidebar-panel { height: calc(100vh - 56px - 1rem); overflow-y: auto; padding: 1rem; background-color: #f8f9fa; }
+        .main-content-col { padding-left: 0; padding-right: 0; }
+        .container-fluid.main-layout { padding-top: 1rem; /* Instead of margin-top */ }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/index.html">文档管理系统</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/index.html">主页</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin.html">管理后台</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" id="toolkitDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">项目开发工具集</a>
+                        <ul class="dropdown-menu" aria-labelledby="toolkitDropdown">
+                            <li><a class="dropdown-item" href="/toolkit_economics.html">经济测算工具</a></li>
+                            <li><a class="dropdown-item active" aria-current="page" href="/toolkit_site_selection.html">储能选址辅助工具</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                     <li class="nav-item" id="userInfoNav" style="display: none; align-items: center;">
+                        <span class="navbar-text me-2">欢迎, <span id="usernameNav"></span></span>
+                        <!-- Removed roleNav span based on previous self-correction from other files -->
+                        <button class="btn btn-sm btn-outline-light" id="logoutButtonNav">登出</button>
+                    </li>
+                    <li class="nav-item" id="loginLinkNav">
+                        <a class="nav-link" href="/admin.html#authSection">登录</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid main-layout">
+        <div class="row">
+            <div class="col-lg-3 col-md-4">
+                <div id="left-panel" class="sidebar-panel border rounded">
+                    <h4>项目与图层</h4>
+                    <p>项目选择、图层列表等控件将放置于此。</p>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-8 main-content-col">
+                <div id="map" class="border rounded"></div>
+            </div>
+            <div class="col-lg-3 d-none d-lg-block">
+                <div id="right-panel" class="sidebar-panel border rounded">
+                    <h4>详情与分析</h4>
+                    <p>选点详情、分析结果等控件将放置于此。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth_check.js"></script>
+    <script src="/js/toolkit_site_selection.js"></script>
+</body>
+</html>

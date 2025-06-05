@@ -1,0 +1,6 @@
+node_modules/
+uploads/
+database/main.db
+sessions/
+.DS_Store
+*.log

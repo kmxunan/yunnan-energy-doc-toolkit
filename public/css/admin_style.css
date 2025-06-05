@@ -1,0 +1,201 @@
+/* public/css/admin_style.css */
+body.admin-body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1030;
+    padding: 0;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    background-color: #212529;
+    color: #fff;
+    width: 250px;
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 1rem 1.25rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    background-color: rgba(0,0,0,.2);
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sidebar-header .bi {
+    margin-right: 0.5rem;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    padding: .9rem 1.5rem;
+    transition: background-color .15s ease-in-out, color .15s ease-in-out, border-left-color .15s ease-in-out;
+    border-left: 4px solid transparent;
+    display: flex;
+    align-items: center;
+}
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255,255,255,0.1);
+    border-left-color: #0d6efd;
+}
+.sidebar .nav-link.active {
+    color: #fff;
+    background-color: #0d6efd;
+    border-left-color: #ffc107;
+}
+.sidebar .nav-link .bi {
+    margin-right: 12px;
+    width: 22px;
+    text-align: center;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+.sidebar .nav-item.mt-auto {
+    margin-top: auto;
+}
+.sidebar .nav-item.border-top {
+    border-top: 1px solid rgba(255,255,255,0.15) !important;
+}
+
+
+/* Main Content Wrapper & Top Navbar */
+.main-content-wrapper {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+    background-color: #f8f9fa;
+}
+.admin-top-navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    padding: .75rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+.main-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+}
+
+/* Section display (controlled by JS) */
+.section { display: none; }
+.section.active { display: block; }
+
+/* Login Section Styles */
+#loginSection {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #eef2f7;
+    z-index: 2000;
+}
+#loginSection.d-none {
+    display: none !important;
+}
+.login-card {
+    max-width: 450px;
+    width: 100%;
+    border: none;
+    border-radius: .75rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+}
+.login-card .card-body {
+    padding: 2.5rem;
+}
+/* Styles for Bootstrap 5 Floating Labels */
+.form-floating > .form-control {
+    padding: 1rem 0.75rem;
+}
+.form-floating > .form-control:focus,
+.form-floating > .form-control:not(:placeholder-shown) { /* Apply when focused OR not placeholder-shown */
+    padding-top: 1.625rem;
+    padding-bottom: 0.625rem;
+}
+.form-floating > label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    padding: 1rem 0.75rem;
+    pointer-events: none;
+    border: 1px solid transparent;
+    transform-origin: 0 0;
+    transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+}
+
+/* This is the crucial part for floating labels: when input has content OR is focused */
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-control:focus ~ label {
+    opacity: 0.65;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+
+/* Admin Dashboard (initially hidden) */
+#adminDashboard {
+    display: none;
+    flex-direction: row;
+    min-height: 100vh;
+}
+#adminDashboard.active {
+    display: flex;
+}
+
+/* Toast Container */
+#toastContainer { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1100; }
+.toast-custom { min-width: 300px; }
+
+/* Table Styles */
+.table th, .table td { vertical-align: middle; font-size: 0.9rem; }
+.table th { font-weight: 600; color: #495057; }
+.table-hover tbody tr:hover { background-color: rgba(0, 123, 255, 0.05); }
+
+/* Small screen adaptations */
+@media (max-width: 767.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+        padding-top: 0;
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .main-content-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+    .admin-top-navbar {
+        /* position: fixed; width: 100%; */
+    }
+    .main-content {
+        padding-top: calc(58px + 1rem);
+    }
+    .login-card .card-body {
+        padding: 2rem;
+    }
+}
+
+/* General Admin Page Enhancements */
+.card-header.fw-semibold {
+    background-color: #e9ecef;
+    border-bottom: 1px solid #dee2e6;
+}

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>储能项目经济测算与敏感性分析工具</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { padding-top: 56px; }
+  </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/index.html">文档管理系统</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/index.html">主页</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin.html">管理后台</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" id="toolkitDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        项目开发工具集
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="toolkitDropdown">
+                        <li><a class="dropdown-item active" aria-current="page" href="/toolkit_economics.html">经济测算工具</a></li>
+                        <li><a class="dropdown-item" href="/toolkit_site_selection.html">储能选址辅助工具</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                 <li class="nav-item" id="userInfoNav" style="display: none; align-items: center;">
+                    <span class="navbar-text me-2" id="usernameNav"></span>
+                    <button class="btn btn-sm btn-outline-light" id="logoutButtonNav">登出</button>
+                </li>
+                <li class="nav-item" id="loginLinkNav">
+                    <a class="nav-link" href="/admin.html#authSection">登录</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-lg mt-4 mb-4" style="padding-top: 1rem;">
+  <h1 class="mb-4 text-primary visually-hidden">储能项目经济测算与敏感性分析</h1>
+  <p class="lead mb-4">请根据项目实际情况填写以下参数。参考《需求说明书》表3.1.1.1 及《共享储能电站收益分析V26.html》。</p>
+
+  <div id="toolkitMessageArea" class="mt-3 mb-3"></div>
+
+  <form id="economicAnalysisForm">
+
+    <div class="card mb-4">
+      <div class="card-header bg-secondary text-white"><h3>1. 项目基本参数</h3></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4"><label for="p_rated_mw" class="form-label">额定功率 (P_rated)</label><div class="input-group has-validation"><input type="number" class="form-control" id="p_rated_mw" name="p_rated_mw" value="100" step="any" required><span class="input-group-text">MW</span><div class="invalid-feedback" id="p_rated_mw_error"></div></div></div>
+          <div class="col-md-4"><label for="e_rated_mwh" class="form-label">额定容量 (E_rated)</label><div class="input-group has-validation"><input type="number" class="form-control" id="e_rated_mwh" name="e_rated_mwh" value="200" step="any" required><span class="input-group-text">MWh</span><div class="invalid-feedback" id="e_rated_mwh_error"></div></div></div>
+          <div class="col-md-4"><label for="life_span_years" class="form-label">项目生命周期/分析期</label><div class="input-group has-validation"><input type="number" class="form-control" id="life_span_years" name="life_span_years" value="15" step="1" required><span class="input-group-text">年</span><div class="invalid-feedback" id="life_span_years_error"></div></div></div>
+          <div class="col-md-4"><label for="eta_rt_percent" class="form-label">全周期往返效率 (η_RT)</label><div class="input-group has-validation"><input type="number" class="form-control" id="eta_rt_percent" name="eta_rt_percent" value="88" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="eta_rt_percent_error"></div></div></div>
+          <div class="col-md-4"><label for="deg_rate_annual_percent" class="form-label">年容量衰减率</label><div class="input-group has-validation"><input type="number" class="form-control" id="deg_rate_annual_percent" name="deg_rate_annual_percent" value="1.5" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="deg_rate_annual_percent_error"></div></div></div>
+          <div class="col-md-4"><label for="tech_type" class="form-label">技术类型</label><select class="form-select" id="tech_type" name="tech_type"><option value="LiFePO4" selected>磷酸铁锂</option><option value="VanadiumFlow">全钒液流</option><option value="Other">其他</option></select><div class="invalid-feedback" id="tech_type_error"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-secondary text-white"><h3>2. 成本参数</h3></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4"><label for="capex_per_kwh" class="form-label">单位容量投资成本 (EPC相关)</label><div class="input-group has-validation"><input type="number" class="form-control" id="capex_per_kwh" name="capex_per_kwh" value="750" step="any"><span class="input-group-text">元/kWh</span><div class="invalid-feedback" id="capex_per_kwh_error"></div></div></div>
+          <div class="col-md-4"><label for="capex_per_kw" class="form-label">单位功率投资成本 (EPC相关)</label><div class="input-group has-validation"><input type="number" class="form-control" id="capex_per_kw" name="capex_per_kw" value="0" step="any"><span class="input-group-text">元/kW</span><div class="invalid-feedback" id="capex_per_kw_error"></div></div></div>
+          <div class="col-md-4"><label for="other_capex_rate_percent" class="form-label">其他初始投资比例 (占EPC)</label><div class="input-group has-validation"><input type="number" class="form-control" id="other_capex_rate_percent" name="other_capex_rate_percent" value="5" step="any"><span class="input-group-text">%</span><div class="invalid-feedback" id="other_capex_rate_percent_error"></div></div></div>
+          <div class="col-md-6"><label for="opex_rate_on_epc_percent" class="form-label">年运维成本 (基于EPC)</label><div class="input-group has-validation"><input type="number" class="form-control" id="opex_rate_on_epc_percent" name="opex_rate_on_epc_percent" value="1.5" step="any"><span class="input-group-text">%EPC</span><div class="invalid-feedback" id="opex_rate_on_epc_percent_error"></div></div></div>
+          <div class="col-md-6"><label for="opex_annual_fixed_other" class="form-label">其他年固定运维成本</label><div class="input-group has-validation"><input type="number" class="form-control" id="opex_annual_fixed_other" name="opex_annual_fixed_other" value="0" step="any"><span class="input-group-text">元/年</span><div class="invalid-feedback" id="opex_annual_fixed_other_error"></div></div></div>
+          <div class="col-12 mt-3">
+            <div class="form-check"><input class="form-check-input" type="checkbox" id="include_battery_replacement" name="include_battery_replacement" checked><label class="form-check-label" for="include_battery_replacement">考虑电池更换成本</label></div>
+          </div>
+          <div class="col-md-6 replacement-fields"><label for="replacement_year" class="form-label">电池更换时间点</label><div class="input-group has-validation"><input type="number" class="form-control" id="replacement_year" name="replacement_year" value="10" step="1"><span class="input-group-text">年末</span><div class="invalid-feedback" id="replacement_year_error"></div></div></div>
+          <div class="col-md-6 replacement-fields"><label for="replacement_cost_per_kwh" class="form-label">电池更换成本单价</label><div class="input-group has-validation"><input type="number" class="form-control" id="replacement_cost_per_kwh" name="replacement_cost_per_kwh" value="250" step="any"><span class="input-group-text">元/kWh</span><div class="invalid-feedback" id="replacement_cost_per_kwh_error"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><h3>3. 融资参数</h3></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4"><label for="loan_percent_input" class="form-label">贷款比例 (占总初始投资)</label><div class="input-group has-validation"><input type="number" class="form-control" id="loan_percent_input" name="loan_percent_input" value="70" step="any"><span class="input-group-text">%</span><div class="invalid-feedback" id="loan_percent_input_error"></div></div></div>
+                <div class="col-md-4"><label for="interest_rate_annual_percent" class="form-label">贷款年利率</label><div class="input-group has-validation"><input type="number" class="form-control" id="interest_rate_annual_percent" name="interest_rate_annual_percent" value="3.0" step="any"><span class="input-group-text">%</span><div class="invalid-feedback" id="interest_rate_annual_percent_error"></div></div></div>
+                <div class="col-md-4"><label for="loan_term_years" class="form-label">贷款期限</label><div class="input-group has-validation"><input type="number" class="form-control" id="loan_term_years" name="loan_term_years" value="10" step="1"><span class="input-group-text">年</span><div class="invalid-feedback" id="loan_term_years_error"></div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><h3>4. 税务参数</h3></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3 mb-3"><label for="vat_rate_output_percent" class="form-label">销项增值税税率</label><div class="input-group has-validation"><input type="number" class="form-control" id="vat_rate_output_percent" name="vat_rate_output_percent" value="6" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="vat_rate_output_percent_error"></div></div><div class="form-text">例如电力销售、服务等</div></div>
+                <div class="col-md-6 col-lg-3 mb-3"><label for="vat_rate_capex_input_percent" class="form-label">固定资产进项增值税税率</label><div class="input-group has-validation"><input type="number" class="form-control" id="vat_rate_capex_input_percent" name="vat_rate_capex_input_percent" value="13" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="vat_rate_capex_input_percent_error"></div></div><div class="form-text">如设备采购、电池更换</div></div>
+                <div class="col-md-6 col-lg-3 mb-3"><label for="vat_rate_opex_input_percent" class="form-label">运营成本进项增值税税率</label><div class="input-group has-validation"><input type="number" class="form-control" id="vat_rate_opex_input_percent" name="vat_rate_opex_input_percent" value="6" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="vat_rate_opex_input_percent_error"></div></div><div class="form-text">如运维服务</div></div>
+                <div class="col-md-6 col-lg-3 mb-3"><label for="surtax_rate_on_vat_percent" class="form-label">增值税附加税费率</label><div class="input-group has-validation"><input type="number" class="form-control" id="surtax_rate_on_vat_percent" name="surtax_rate_on_vat_percent" value="12" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="surtax_rate_on_vat_percent_error"></div></div><div class="form-text">如城建税7%+教育附加3%+地方教育附加2%</div></div>
+                <div class="col-md-6 col-lg-4"><label for="income_tax_rate_standard_percent" class="form-label">所得税率 (标准)</label><div class="input-group has-validation"><input type="number" class="form-control" id="income_tax_rate_standard_percent" name="income_tax_rate_standard_percent" value="25" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="income_tax_rate_standard_percent_error"></div></div></div>
+                <div class="col-md-6 col-lg-4 d-flex align-items-center mt-md-3 pt-md-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="use_western_dev_tax" name="use_western_dev_tax" checked><label class="form-check-label" for="use_western_dev_tax">适用西部大开发税收优惠 (按15%)</label></div></div>
+                <div class="col-md-6 col-lg-4"><label for="max_loss_carry_forward_years" class="form-label">所得税亏损弥补年限</label><div class="input-group has-validation"><input type="number" class="form-control" id="max_loss_carry_forward_years" name="max_loss_carry_forward_years" value="5" step="1" min="0"><span class="input-group-text">年</span><div class="invalid-feedback" id="max_loss_carry_forward_years_error"></div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><h3>5. 运营策略与市场参数</h3></div>
+        <div class="card-body">
+            <h4 class="mt-2">5.1 能量套利</h4>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6 col-lg-3"><label for="n_cycles_per_year" class="form-label">年等效满充满放次数</label><div class="input-group has-validation"><input type="number" class="form-control" id="n_cycles_per_year" name="n_cycles_per_year" value="700" step="1"><span class="input-group-text">次/年</span><div class="invalid-feedback" id="n_cycles_per_year_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="dod_percent" class="form-label">平均放电深度 (DoD)</label><div class="input-group has-validation"><input type="number" class="form-control" id="dod_percent" name="dod_percent" value="80" step="any"><span class="input-group-text">%</span><div class="invalid-feedback" id="dod_percent_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="price_peak_kwh" class="form-label">高峰放电电价 (不含税)</label><div class="input-group has-validation"><input type="number" class="form-control" id="price_peak_kwh" name="price_peak_kwh" value="0.5037" step="any"><span class="input-group-text">元/kWh</span><div class="invalid-feedback" id="price_peak_kwh_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="price_valley_kwh" class="form-label">低谷充电电价 (不含税)</label><div class="input-group has-validation"><input type="number" class="form-control" id="price_valley_kwh" name="price_valley_kwh" value="0.1679" step="any"><span class="input-group-text">元/kWh</span><div class="invalid-feedback" id="price_valley_kwh_error"></div></div></div>
+            </div>
+            <h4 class="mt-3">5.2 辅助服务 (详细参数)</h4>
+            <p class="form-text mb-2">以下为详细参数输入，如果填写，将优先用于计算辅助服务收入。如果多数为0或未填写，且下方的“辅助服务年总收入(估算)”有值，则会使用总额估算值。</p>
+            <h5>一次调频 (PFR)</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6 col-lg-3"><label for="pfr_capacity_mw" class="form-label">参与一次调频容量</label><div class="input-group has-validation"><input type="number" class="form-control" id="pfr_capacity_mw" name="pfr_capacity_mw" value="50" step="any"><span class="input-group-text">MW</span><div class="invalid-feedback" id="pfr_capacity_mw_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="pfr_annual_service_hours" class="form-label">年服务小时数</label><div class="input-group has-validation"><input type="number" class="form-control" id="pfr_annual_service_hours" name="pfr_annual_service_hours" value="8000" step="1"><span class="input-group-text">小时/年</span><div class="invalid-feedback" id="pfr_annual_service_hours_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="pfr_compensation_price_mw_hour" class="form-label">一次调频补偿单价</label><div class="input-group has-validation"><input type="number" class="form-control" id="pfr_compensation_price_mw_hour" name="pfr_compensation_price_mw_hour" value="10" step="any"><span class="input-group-text">元/MW/h</span><div class="invalid-feedback" id="pfr_compensation_price_mw_hour_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="pfr_availability_factor_percent" class="form-label">一次调频服务可用率</label><div class="input-group has-validation"><input type="number" class="form-control" id="pfr_availability_factor_percent" name="pfr_availability_factor_percent" value="95" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="pfr_availability_factor_percent_error"></div></div></div>
+            </div>
+            <h5>二次调频/AGC</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6 col-lg-3"><label for="agc_capacity_mw" class="form-label">参与AGC容量</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_capacity_mw" name="agc_capacity_mw" value="100" step="any"><span class="input-group-text">MW</span><div class="invalid-feedback" id="agc_capacity_mw_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_annual_effective_service_days" class="form-label">年有效服务天数</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_annual_effective_service_days" name="agc_annual_effective_service_days" value="300" step="1"><span class="input-group-text">天/年</span><div class="invalid-feedback" id="agc_annual_effective_service_days_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_compensation_fixed_price_mw_day" class="form-label">AGC固定补偿单价</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_compensation_fixed_price_mw_day" name="agc_compensation_fixed_price_mw_day" value="150" step="any"><span class="input-group-text">元/MW/日</span><div class="invalid-feedback" id="agc_compensation_fixed_price_mw_day_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_mileage_price_mwh" class="form-label">AGC里程补偿单价</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_mileage_price_mwh" name="agc_mileage_price_mwh" value="200" step="any"><span class="input-group-text">元/MWh</span><div class="invalid-feedback" id="agc_mileage_price_mwh_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_k_value" class="form-label">AGC市场补偿系数 (K)</label><div class="has-validation"><input type="number" class="form-control" id="agc_k_value" name="agc_k_value" value="1.0" step="0.01"><div class="invalid-feedback" id="agc_k_value_error"></div></div><div class="form-text mt-0">用户输入的综合调整系数</div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_response_time_s" class="form-label">AGC实际响应时间 (T<sub>e</sub>)</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_response_time_s" name="agc_response_time_s" value="30" step="any"><span class="input-group-text">秒</span><div class="invalid-feedback" id="agc_response_time_s_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_regulation_accuracy_percent" class="form-label">AGC实际调节精度 (D<sub>e</sub>)</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_regulation_accuracy_percent" name="agc_regulation_accuracy_percent" value="95" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="agc_regulation_accuracy_percent_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_regulation_rate_mw_min" class="form-label">AGC实际调节速率 (R<sub>e</sub>)</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_regulation_rate_mw_min" name="agc_regulation_rate_mw_min" value="10" step="any"><span class="input-group-text">MW/分钟</span><div class="invalid-feedback" id="agc_regulation_rate_mw_min_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_daily_calls" class="form-label">AGC日调用次数 (N<sub>call</sub>)</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_daily_calls" name="agc_daily_calls" value="20" step="1"><span class="input-group-text">次/日</span><div class="invalid-feedback" id="agc_daily_calls_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_avg_duration_per_call_min" class="form-label">AGC平均单次调用时长</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_avg_duration_per_call_min" name="agc_avg_duration_per_call_min" value="5" step="any"><span class="input-group-text">分钟/次</span><div class="invalid-feedback" id="agc_avg_duration_per_call_min_error"></div></div></div>
+                <div class="col-md-6 col-lg-3"><label for="agc_regulation_depth_percent" class="form-label">AGC调节深度</label><div class="input-group has-validation"><input type="number" class="form-control" id="agc_regulation_depth_percent" name="agc_regulation_depth_percent" value="20" step="any" min="0" max="100"><span class="input-group-text">%</span><div class="invalid-feedback" id="agc_regulation_depth_percent_error"></div></div><div class="form-text mt-0">单次调节能量占(P_AGC*T_call_avg)或E_rated的比例</div></div>
+            </div>
+            <h4 class="mt-3">5.3 容量市场/租赁 (详细参数)</h4>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6"><label for="capacity_market_participation_mw" class="form-label">参与容量市场容量</label><div class="input-group has-validation"><input type="number" class="form-control" id="capacity_market_participation_mw" name="capacity_market_participation_mw" value="100" step="any"><span class="input-group-text">MW</span><div class="invalid-feedback" id="capacity_market_participation_mw_error"></div></div></div>
+                <div class="col-md-6"><label for="capacity_market_price_mw_month" class="form-label">容量市场价格</label><div class="input-group has-validation"><input type="number" class="form-control" id="capacity_market_price_mw_month" name="capacity_market_price_mw_month" value="0" step="any"><span class="input-group-text">元/MW/月</span><div class="invalid-feedback" id="capacity_market_price_mw_month_error"></div></div></div>
+            </div>
+            <h4 class="mt-3">5.4 辅助服务与容量租赁 (总额估算 - 备选)</h4>
+            <div class="row g-3">
+                <div class="col-md-6 mb-3"><label for="aux_services_annual_revenue_input_before_vat" class="form-label">辅助服务年总净收入 (估算)</label><div class="input-group has-validation"><input type="number" class="form-control" id="aux_services_annual_revenue_input_before_vat" name="aux_services_annual_revenue_input_before_vat" value="0" step="any"><span class="input-group-text">元/年</span><div class="invalid-feedback" id="aux_services_annual_revenue_input_before_vat_error"></div></div><div class="form-text">若上方详细参数未填或计算结果为0，则使用此值</div></div>
+                <div class="col-md-6 mb-3"><label for="capacity_lease_annual_revenue_input_before_vat" class="form-label">容量租赁年总净收入 (估算)</label><div class="input-group has-validation"><input type="number" class="form-control" id="capacity_lease_annual_revenue_input_before_vat" name="capacity_lease_annual_revenue_input_before_vat" value="0" step="any"><span class="input-group-text">元/年</span><div class="invalid-feedback" id="capacity_lease_annual_revenue_input_before_vat_error"></div></div><div class="form-text">若上方详细参数未填或计算结果为0，则使用此值</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><h3>6. 财务评价与折旧参数</h3></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4"><label for="discount_rate_wacc_percent" class="form-label">项目折现率 (WACC)</label><div class="input-group has-validation"><input type="number" class="form-control" id="discount_rate_wacc_percent" name="discount_rate_wacc_percent" value="5.38" step="any"><span class="input-group-text">%</span><div class="invalid-feedback" id="discount_rate_wacc_percent_error"></div></div></div>
+                <div class="col-md-4"><label for="equity_discount_rate_percent" class="form-label">股权要求回报率 (Re)</label><div class="input-group has-validation"><input type="number" class="form-control" id="equity_discount_rate_percent" name="equity_discount_rate_percent" value="10.0" step="any"><span class="input-group-text">%</span><div class="invalid-feedback" id="equity_discount_rate_percent_error"></div></div></div>
+                <div class="col-md-4"><label for="depreciation_years_initial" class="form-label">初始投资折旧年限</label><div class="input-group has-validation"><input type="number" class="form-control" id="depreciation_years_initial" name="depreciation_years_initial" value="10" step="1"><span class="input-group-text">年</span><div class="invalid-feedback" id="depreciation_years_initial_error"></div></div></div>
+                <div class="col-md-6 replacement-fields"><label for="depreciation_years_replacement" class="form-label">电池更换后折旧年限</label><div class="input-group has-validation"><input type="number" class="form-control" id="depreciation_years_replacement" name="depreciation_years_replacement" value="5" step="1"><span class="input-group-text">年</span><div class="invalid-feedback" id="depreciation_years_replacement_error"></div></div></div>
+                <div class="col-md-6"><label for="salvage_rate_percent" class="form-label">固定资产净残值率</label><div class="input-group has-validation"><input type="number" class="form-control" id="salvage_rate_percent" name="salvage_rate_percent" value="5" step="any"><span class="input-group-text">%</span><div class="invalid-feedback" id="salvage_rate_percent_error"></div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><h3>7. 方案保存 (可选)</h3></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6"><label for="scenario_name" class="form-label">方案名称:</label><input type="text" class="form-control" id="scenario_name" name="scenario_name" placeholder="例如：基准情景分析"><div class="invalid-feedback" id="scenario_name_error"></div></div>
+                <div class="col-md-6"><label for="scenario_notes" class="form-label">备注:</label><textarea class="form-control" id="scenario_notes" name="scenario_notes" rows="3"></textarea><div class="invalid-feedback" id="scenario_notes_error"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+      <button type="submit" class="btn btn-primary btn-lg me-2">开始测算 (基准情景)</button> <!-- Changed from btn-success -->
+      <button type="button" id="saveScenarioButton" class="btn btn-primary btn-lg">保存当前方案</button> <!-- Changed from btn-info -->
+    </div>
+    <p id="calculationStatus" class="mt-3"></p>
+  </form>
+
+  <hr class="my-4">
+
+  <div class="card mb-4">
+    <div class="card-header bg-secondary text-white"><h3>8. 敏感性分析设置</h3></div>
+    <div class="card-body">
+        <form id="sensitivityAnalysisForm">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4"><label for="sensitivityParam" class="form-label">选择分析参数:</label><select class="form-select" id="sensitivityParam" name="sensitivityParam"><option value="">-- 请选择 --</option><option value="capex_per_kwh">单位容量投资成本 (元/kWh)</option><option value="price_peak_kwh">高峰放电电价 (元/kWh)</option><option value="price_valley_kwh">低谷充电电价 (元/kWh)</option><option value="n_cycles_per_year">年等效循环次数</option><option value="eta_rt_percent">往返效率 (%)</option><option value="interest_rate_annual_percent">贷款年利率 (%)</option><option value="opex_rate_on_epc_percent">年运维成本占EPC比例 (%)</option><option value="opex_annual_fixed_other">其他年固定运维成本 (元/年)</option><option value="pfr_compensation_price_mw_hour">一次调频补偿单价 (元/MW/h)</option><option value="agc_mileage_price_mwh">AGC里程补偿单价 (元/MWh)</option><option value="agc_k_value">AGC市场补偿系数 (K)</option><option value="discount_rate_wacc_percent">项目折现率 (WACC %)</option><option value="equity_discount_rate_percent">股权折现率 (%)</option><option value="vat_rate_output_percent">销项增值税税率 (%)</option><option value="vat_rate_capex_input_percent">CAPEX进项税率 (%)</option><option value="vat_rate_opex_input_percent">OPEX进项税率 (%)</option><option value="income_tax_rate_standard_percent">所得税率 (%)</option></select></div>
+            <div class="col-md-3"><label for="sensitivityVariationType" class="form-label">变动类型:</label><select class="form-select" id="sensitivityVariationType" name="sensitivityVariationType"><option value="percentage" selected>百分比变动</option><option value="absolute">绝对值步长</option></select></div>
+            <div class="col-md-3"><label for="sensitivityRange" class="form-label">变动值 (逗号分隔):</label><input type="text" class="form-control" id="sensitivityRange" name="sensitivityRange" value="-20,-10,10,20" placeholder="例如: -20,-10,10,20 (%) 或 100,50"><div class="form-text">百分比变动: -20,-10,10,20<br>绝对值变动: -100,-50,50,100</div></div>
+            <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">运行敏感性分析</button></div> <!-- Changed from btn-warning -->
+          </div>
+        </form>
+        <p id="sensitivityStatus" class="mt-3"></p>
+    </div>
+  </div>
+
+  <section id="resultsSection" class="card mb-4" style="display:none;">
+    <div class="card-header"><h2>测算结果 (基准情景)</h2></div>
+    <div class="card-body">
+        <div class="row g-3 financial-summary mb-3">
+          <div class="col-md-4"><span>项目总初始投资(不含税):</span> <strong id="res_total_initial_investment"></strong> 元</div>
+          <div class="col-md-4"><span>初始投资可抵扣进项税:</span> <strong id="res_initial_vat_credit"></strong> 元</div>
+          <div class="col-md-4"><span>项目净初始投资(扣除进项税后):</span> <strong id="res_net_initial_investment"></strong> 元</div>
+          <div class="col-md-4"><span>项目资本金 (股权):</span> <strong id="res_equity_investment"></strong> 元</div>
+          <div class="col-md-4"><span>贷款总额:</span> <strong id="res_loan_amount"></strong> 元</div>
+        </div>
+        <h3 class="mt-3">关键财务指标:</h3>
+        <div class="row g-3 financial-summary mb-3">
+          <div class="col-md-3"><span>项目税前IRR:</span> <strong id="res_project_irr_pre_tax"></strong> %</div>
+          <div class="col-md-3"><span>项目税后IRR:</span> <strong id="res_project_irr_post_tax"></strong> %</div>
+          <div class="col-md-3"><span>股权税后IRR:</span> <strong id="res_equity_irr_post_tax"></strong> %</div>
+          <div class="col-md-3"><span>项目NPV (WACC):</span> <strong id="res_project_npv"></strong> 元</div>
+          <div class="col-md-3"><span>股权NPV (Re):</span> <strong id="res_equity_npv"></strong> 元</div>
+          <div class="col-md-3"><span>股权静态回收期:</span> <strong id="res_static_pbp_equity"></strong> 年</div>
+          <div class="col-md-3"><span>股权动态回收期:</span> <strong id="res_dynamic_pbp_equity"></strong> 年</div>
+          <div class="col-md-3"><span>度电成本 (LCOS):</span> <strong id="res_lcos"></strong> 元/kWh</div>
+        </div>
+        <h3 class="mt-3">年度现金流量表:</h3>
+        <div class="table-responsive">
+          <table id="cashFlowTable" class="table table-bordered table-striped table-sm">
+            <thead>
+            <tr>
+              <th>年</th><th>总收入(不含税)</th><th>能量套利</th><th>一次调频</th><th>AGC容量</th><th>AGC里程</th><th>容量市场</th><th>其他辅助(总额)</th>
+              <th>运维成本(不含税)</th><th>应交增值税净额</th><th>增值税附加</th><th>EBITDA</th><th>折旧</th><th>EBIT</th>
+              <th>利息</th><th>EBT</th><th>弥补亏损额</th><th>应纳税所得额(最终)</th><th>所得税</th><th>净利润</th>
+              <th>CAPEX(不含税)</th><th>初始进项税</th><th>更换进项税</th><th>本金偿还</th><th>FCFE</th><th>FCFF</th>
+              <th>项目税前CF</th>
+            </tr>
+            </thead>
+            <tbody id="cashFlowTableBody"></tbody>
+          </table>
+        </div>
+    </div>
+  </section>
+
+  <section id="sensitivityResultsSection" class="card mb-4" style="display:none;">
+    <div class="card-header"><h2>敏感性分析结果</h2></div>
+    <div class="card-body">
+        <div class="table-responsive">
+          <table id="sensitivityResultsTable" class="table table-bordered table-striped table-sm">
+            <thead>
+            <tr>
+              <th>变动参数</th>
+              <th>参数值</th>
+              <th>股权IRR (%)</th>
+              <th>项目NPV (元)</th>
+              <th>LCOS (元/kWh)</th>
+            </tr>
+            </thead>
+            <tbody id="sensitivityResultsTableBody"></tbody>
+          </table>
+        </div>
+        <div id="sensitivityChartContainer" style="width: 100%; height: 400px; margin-top: 20px;"></div>
+    </div>
+  </section>
+
+  <section id="savedScenariosSection" class="card">
+    <div class="card-header"><h3>已保存的测算方案</h3></div>
+    <div class="card-body">
+        <div id="savedScenariosListContainer">
+          <p id="savedScenariosStatus" class="alert alert-info" style="display: none;">正在加载已保存方案...</p>
+          <ul id="savedScenariosList" class="list-group"></ul>
+        </div>
+    </div>
+  </section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="/js/auth_check.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/toolkit_economics.js"></script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云南能源文档工具集 - 首页</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css"> <style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f4f7f9;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    :root {
+        --brand-primary: #005c99;
+        --brand-secondary: #007bff;
+        --brand-accent: #28a745;
+        --brand-light: #e9ecef;
+        --brand-dark: #343a40;
+    }
+    .navbar-brand-logo { max-height: 40px; }
+    .navbar { background-color: var(--brand-primary); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    .navbar .navbar-brand, .navbar .nav-link { color: #fff; transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out; }
+    .navbar .nav-link:hover, .navbar .nav-link.active { color: #cceeff; }
+    .navbar .btn-outline-light:hover { background-color: #fff; color: var(--brand-primary); }
+    .hero-section { background: linear-gradient(rgba(0, 92, 153, 0.85), rgba(0, 123, 255, 0.75)), url('https://placehold.co/1920x600/6c757d/333333?text=%E8%83%BD%E6%BA%90%E8%A1%8C%E4%B8%9A%E8%83%8C%E6%99%AF') no-repeat center center; background-size: cover; color: white; padding: 4rem 0; text-align: center; }
+    .hero-section h1 { font-size: 2.8rem; font-weight: 700; margin-bottom: 1rem; }
+    .hero-section p { font-size: 1.15rem; margin-bottom: 2rem; max-width: 700px; margin-left: auto; margin-right: auto; }
+    .filters-card { background-color: #fff; border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem; }
+    .filters-card .form-label { font-weight: 500; color: #495057; }
+    .filters-card .form-control, .filters-card .form-select { border-radius: 0.375rem; border: 1px solid #ced4da; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
+    .filters-card .form-control:focus, .filters-card .form-select:focus { border-color: var(--brand-secondary); box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); }
+    .btn-primary-custom { background-color: var(--brand-secondary); border-color: var(--brand-secondary); transition: background-color 0.2s ease, border-color 0.2s ease; color:white; }
+    .btn-primary-custom:hover { background-color: #0069d9; border-color: #0062cc; }
+    .document-card { background-color: #fff; border: 1px solid #dee2e6; border-radius: 0.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; display: flex; flex-direction: column; height: 100%; }
+    .document-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+    .document-card .card-img-top-container { height: 200px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; overflow: hidden; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; }
+    .document-card .card-img-top { width: 100%; height: 100%; object-fit: cover; }
+    .document-card .card-img-placeholder { font-size: 3rem; color: #adb5bd; }
+    .document-card .card-body { display: flex; flex-direction: column; flex-grow: 1; }
+    .document-card .card-title { color: var(--brand-primary); font-weight: 600; margin-bottom: 0.5rem; }
+    .document-card .card-title a { text-decoration: none; color: inherit; }
+    .document-card .card-title a:hover { color: var(--brand-secondary); text-decoration: underline; }
+    .document-card .badge { font-size: 0.75rem; }
+    .document-card .card-text { font-size: 0.9rem; color: #6c757d; flex-grow: 1; margin-bottom: 1rem; }
+    .document-card .card-footer { background-color: transparent; border-top: 1px solid #eee; padding-top: 0.75rem; margin-top: auto; } /* mt-auto and solid top border */
+    .document-card .btn-outline-primary { color: var(--brand-secondary); border-color: var(--brand-secondary); }
+    .document-card .btn-outline-primary:hover { background-color: var(--brand-secondary); color: white; }
+    .document-card .btn-outline-success { color: var(--brand-accent); border-color: var(--brand-accent); }
+    .document-card .btn-outline-success:hover { background-color: var(--brand-accent); color: white; }
+    #loadingIndicator .spinner-border { width: 3rem; height: 3rem; color: var(--brand-secondary); }
+    #noResultsMessage { color: #6c757d; }
+    #noResultsMessage .bi { font-size: 3rem; margin-bottom: 1rem; }
+    .footer { background-color: var(--brand-dark); color: #adb5bd; padding: 2rem 0; }
+    .footer a { color: #ced4da; text-decoration: none; }
+    .footer a:hover { color: #fff; text-decoration: underline; }
+    #toastContainer { position: fixed; bottom: 1rem; right: 1rem; z-index: 1050; }
+    .toast-custom { min-width: 250px; }
+    @media (max-width: 767.98px) {
+        .hero-section h1 { font-size: 2.2rem; }
+        .hero-section p { font-size: 1rem; }
+        .navbar-nav { margin-top: 0.5rem; }
+        .filters-card .col-md-auto { width: 100%; }
+        .filters-card .d-grid .btn { width: 100%; margin-top: 0.5rem; }
+    }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <i class="bi bi-lightning-charge-fill me-2" style="font-size: 1.5rem;"></i>
+            云南能源文档工具集
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/"><i class="bi bi-house-door-fill me-1"></i>首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin.html"><i class="bi bi-gear-fill me-1"></i>后台管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/toolkit_economics.html"><i class="bi bi-calculator-fill me-1"></i>经济测算</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/toolkit_site_selection.html"><i class="bi bi-map-fill me-1"></i>选址辅助</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-lg-3">
+                <li class="nav-item" id="authStatusContainer">
+                    <span id="authStatus" class="nav-link"></span>
+                </li>
+                <li class="nav-item">
+                    <button id="logoutButton" class="btn btn-outline-light btn-sm d-none"><i class="bi bi-box-arrow-right me-1"></i>登出</button>
+                </li>
+                <li class="nav-item" id="loginLinkContainer">
+                    <a href="/admin.html#login" class="btn btn-light btn-sm"><i class="bi bi-box-arrow-in-right me-1"></i>登录</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<section class="hero-section">
+    <div class="container">
+        <h1>智慧能源 文档驱动</h1>
+        <p class="lead">一站式获取云南省储能项目开发所需文档与分析工具，助力您的决策。</p>
+        <a href="#documentsSection" class="btn btn-primary-custom btn-lg">
+            <i class="bi bi-search me-2"></i>浏览公开文档
+        </a>
+    </div>
+</section>
+
+<main class="container my-4 flex-grow-1" id="documentsSection">
+    <h2 class="text-center mb-4 display-6 fw-bold text-body-emphasis">公开文档资源库</h2>
+
+    <div class="filters-card">
+        <form id="filterForm" class="needs-validation" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-6 col-lg-3">
+                    <label for="searchTerm" class="form-label">关键词搜索</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchTerm" name="searchTerm" placeholder="标题、描述、作者..." class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <label for="classificationFilter" class="form-label">文档分类</label>
+                    <select id="classificationFilter" name="classificationFilter" class="form-select">
+                        <option value="" selected>所有分类</option>
+                    </select>
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label for="sortBy" class="form-label">排序方式</label>
+                    <select id="sortBy" name="sortBy" class="form-select">
+                        <option value="upload_date" selected>上传日期</option>
+                        <option value="title">标题</option>
+                        <option value="author">作者</option>
+                    </select>
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label for="sortOrder" class="form-label">排序顺序</label>
+                    <select id="sortOrder" name="sortOrder" class="form-select">
+                        <option value="DESC" selected>降序</option>
+                        <option value="ASC">升序</option>
+                    </select>
+                </div>
+                <div class="col-md-4 col-lg-2 d-grid">
+                    <button type="button" id="searchButton" class="btn btn-primary-custom w-100">
+                        <i class="bi bi-funnel-fill me-1"></i>应用筛选
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="loadingIndicator" class="text-center py-5 d-none"> <div class="spinner-border" role="status">
+        <span class="visually-hidden">正在加载文档...</span>
+    </div>
+        <p class="mt-2">正在加载文档...</p>
+    </div>
+
+    <div id="documentsGrid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    </div>
+
+    <div id="noResultsMessage" class="text-center py-5 d-none"> <i class="bi bi-inbox-fill text-muted" style="font-size: 4rem;"></i>
+        <h3 class="mt-3 text-muted">未找到相关文档</h3>
+        <p class="text-muted">请尝试调整筛选条件或搜索关键词。</p>
+    </div>
+</main>
+
+<footer class="footer mt-auto py-4">
+    <div class="container text-center">
+        <p class="mb-1">&copy; 2024-2025 云南能源文档与项目开发支持平台。保留所有权利。</p>
+        <p class="text-muted small">技术支持：[您的组织名称] | <a href="#">隐私政策</a> | <a href="#">服务条款</a></p>
+    </div>
+</footer>
+
+<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
+<script src="/js/auth.js"></script>
+<script src="/js/auth_check.js"></script> <script src="/js/home.js"></script>
+<script>
+    // 简单的移动菜单切换
+    const mobileMenuButton = document.getElementById('navbar-toggler'); // Bootstrap 导航切换按钮的默认 ID 通常是 data-bs-target 指向的那个
+    const mobileMenu = document.getElementById('navbarNav'); // Bootstrap 折叠内容的 ID
+
+    // Bootstrap 5 的折叠功能由其 JS 自动处理，所以下面的手动切换可能不再需要，
+    // 或者需要适配 Bootstrap 的事件和类。
+    // 为简化，暂时移除手动切换逻辑，依赖 Bootstrap JS。
+    // 如果需要自定义行为，可以监听 Bootstrap 的 'show.bs.collapse' 和 'hide.bs.collapse' 事件。
+</script>
+</body>
+</html>

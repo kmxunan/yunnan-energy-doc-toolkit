@@ -1,0 +1,503 @@
+/* Base styles */
+/* Bootstrap will handle most of body font, margin, line-height. Keeping thematic colors. */
+
+/* For fixed-top navbar, ensure content isn't obscured */
+body {
+    padding-top: 56px;
+    /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; */
+    /* margin: 0; */
+    /* padding: 0; */
+    /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; */
+    /* margin: 0; */
+    /* padding: 0; */
+    background-color: #F5F5F5; /* Light gray background - Keep custom theme */
+    color: #212121; /* Dark gray for text - Keep custom theme */
+    /* line-height: 1.6; */
+    /* font-size: 16px; */ /* Bootstrap default is 1rem (typically 16px) */
+}
+
+
+/* Bootstrap provides its own heading styles. Keep custom color if desired. */
+h1, h2, h3, h4, h5, h6 {
+    /* margin-top: 1.5em; */ /* Bootstrap has its own margins */
+    /* margin-bottom: 0.75em; */ /* Bootstrap has its own margins */
+    /* color: #004D40; */ /* Custom heading color removed to use Bootstrap defaults */
+    /* font-weight: 600; */ /* Bootstrap heading weights may differ, adjust if needed */
+}
+
+/* Bootstrap heading sizes are responsive. These can be commented out or adjusted. */
+/* h1 { font-size: 2.25em; } */ /* 36px */
+/* h2 { font-size: 1.875em; } */ /* 30px */
+/* h3 { font-size: 1.5em; } */ /* 24px */
+
+/* Links - Bootstrap provides base link styling. This custom color can be an override. */
+a {
+    color: #00796B; /* Primary color - Keep custom theme */
+    /* text-decoration: none; */ /* Bootstrap does this by default */
+}
+
+a:hover, a:focus {
+    /* text-decoration: underline; */ /* Bootstrap does this for hover */
+    color: #004D40; /* Darker shade of primary on hover - Keep custom theme */
+}
+
+/* Header is a custom component, so keep its styles */
+header {
+    background-color: #00796B; /* Primary color */
+    color: #FFFFFF; /* White text on primary background */
+    padding: 1.5em 1em; /* Adjusted padding */
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+
+/* Ensure h1 in header is white and has no top margin */
+header h1 {
+    color: #FFFFFF;
+    margin-top: 0;
+    margin-bottom: 0; /* Remove bottom margin if it's the only element */
+}
+
+.container {
+    /* max-width: 1100px; */ /* Bootstrap's .container or .container-fluid will handle this */
+    /* margin: 1.5em auto; */ /* Bootstrap's .container handles centering */
+    /* padding: 1.5em; */ /* Bootstrap's .container has its own padding */
+    background-color: #FFFFFF; /* Keep if you want a white bg for custom .container elements */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); /* Keep custom shadow */
+    border-radius: 8px; /* Keep custom border-radius */
+}
+
+/* This is a custom section, so its specific styles should largely be kept,
+   but review if padding/margin can be handled by Bootstrap utilities (e.g., p-3, mb-4) */
+.filters-search-section {
+    background-color: #E0F2F1; /* Light teal background */
+    padding: 1.5em; /* Consistent padding */
+    margin-bottom: 1.5em; /* Consistent margin */
+    border-radius: 8px;
+    border: 1px solid #B2DFDB; /* Slightly darker teal border */
+}
+.filters-search-section form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em; /* Consistent gap */
+    align-items: center;
+}
+.filters-search-section label {
+    font-weight: 600; /* Match global label boldness */
+    margin-right: 0.5em;
+    color: #004D40; /* Darker teal for labels */
+}
+.filters-search-section input[type="search"],
+.filters-search-section select {
+    padding: 0.75em; /* Consistent padding */
+    border: 1px solid #BDBDBD; /* Neutral border */
+    border-radius: 4px; /* Standard border-radius */
+    font-size: 1em; /* Base font size */
+    background-color: #FFFFFF;
+    box-sizing: border-box; /* ensure padding doesn't expand overall size */
+}
+.filters-search-section input[type="search"] {
+    flex-grow: 1;
+    min-width: 250px; /* Adjusted min-width */
+}
+.filters-search-section button {
+    padding: 0.75em 1.5em;
+    background-color: #00796B; /* Primary color */
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+}
+.filters-search-section button:hover {
+    background-color: #004D40; /* Darker primary on hover */
+}
+
+#loading-message {
+    text-align: center;
+    color: #616161; /* Secondary text color */
+    margin-top: 1.5em; /* Consistent margin */
+    margin-bottom: 1.5em; /* Consistent margin */
+    font-size: 1.125em; /* 18px */
+}
+
+.document-list {
+    list-style-type: none;
+    padding: 0;
+}
+.document-item {
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid #EEEEEE; /* Lighter border */
+    padding: 1.5em 0; /* Consistent padding */
+}
+.document-item:last-child {
+    border-bottom: none;
+}
+.document-thumbnail {
+    margin-right: 1.5em; /* Consistent spacing */
+    flex-shrink: 0;
+}
+.document-thumbnail img {
+    width: 100px;
+    height: 140px; /* Keep aspect ratio or define standard */
+    border: 1px solid #E0E0E0; /* Light border */
+    object-fit: cover;
+    background-color: #EEEEEE; /* Placeholder bg */
+    border-radius: 4px; /* Slightly rounded images */
+}
+.document-info h3 { /* Global h3 styles already apply color and margins */
+    margin-top: 0; /* Specific override for this context if needed */
+    margin-bottom: 0.25em; /* Space below title */
+    font-size: 1.25em; /* 20px, slightly smaller than global h3 if needed or use global */
+}
+.document-info h3 a {
+    /* Link color already handled by global 'a' */
+    /* text-decoration: none; by global 'a' */
+    font-weight: 600; /* More prominent title */
+    /* font-size could be inherited or set here if different from global h3's font-size */
+}
+/* .document-info h3 a:hover already handled by global a:hover */
+
+.document-meta {
+    font-size: 0.875em; /* 14px */
+    color: #616161; /* Secondary text color */
+    margin-bottom: 0.35em; /* Increased margin */
+}
+.document-description-preview {
+    font-size: 1em; /* 16px */
+    color: #616161; /* Secondary text color */
+    margin-top: 0.5em;
+    line-height: 1.5; /* Ensure consistent line height for clamping */
+    max-height: 3em; /* (line-height * number of lines) = 1.5 * 2 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.error-message {
+    color: #D32F2F; /* Standard Material Design error color */
+    background-color: #FFEBEE; /* Light red background for errors */
+    padding: 1em; /* Consistent padding */
+    border-radius: 4px;
+    font-weight: 500; /* Normal bold, not overly heavy */
+    font-size: 1em;
+    border: 1px solid #FFCDD2; /* Lighter red border */
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+section { /* Used in admin.html */
+    background-color: #FFFFFF;
+    margin-bottom: 1.5em; /* Consistent margin */
+    padding: 1.5em; /* Consistent padding */
+    border-radius: 8px; /* Standardized border-radius */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); /* Standardized shadow */
+}
+
+label { /* General label styling */
+    display: block;
+    margin-top: 1em; /* Consistent margin */
+    margin-bottom: 0.35em; /* Consistent margin */
+    font-size: 1em; /* Base font size */
+    color: #004D40; /* Darker teal for labels - This is specific for filters-search-section and general labels, kept for now */
+    font-weight: 600; /* Bolder labels */
+}
+
+input[type="text"],
+input[type="password"],
+input[type="file"],
+input[type="search"],
+input[type="date"],
+select,
+textarea {
+    /* box-sizing: border-box; */ /* Bootstrap's form-control includes this */
+    /* width: 100%; */ /* Bootstrap's form-control is width: 100% */
+    /* padding: 0.75em; */ /* Bootstrap's form-control has its own padding */
+    /* margin-top: 0.25em; */ /* Bootstrap form groups/utilities can handle spacing */
+    /* margin-bottom: 0.75em; */
+    /* border: 1px solid #BDBDBD; */ /* Bootstrap's form-control has its own border */
+    /* border-radius: 4px; */ /* Bootstrap's form-control has its own border-radius */
+    /* font-size: 1em; */ /* Bootstrap's form-control has its own font sizing */
+    /* background-color: #FFFFFF; */ /* Bootstrap's form-control has its own background */
+    /* color: #212121; */ /* Bootstrap's form-control has its own text color */
+    /* line-height: 1.5; */ /* Bootstrap's form-control has its own line-height */
+    /* transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; */ /* Bootstrap's form-control has its own transitions */
+}
+/* input[type="file"] { */
+    /* padding: 0.5em; */ /* Bootstrap's form-control might need specific adjustment for file inputs if desired */
+/* } */
+/* Focus state is handled by Bootstrap's form-control */
+/* input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="file"]:focus,
+input[type="search"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #00796B;
+    box-shadow: 0 0 0 2px rgba(0, 121, 107, 0.2);
+} */
+
+/* General button styling - To be replaced by Bootstrap's .btn classes */
+/*
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+    padding: 0.75em 1.5em;
+    background-color: #00796B;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0.75em;
+    font-size: 1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+button:hover, button:focus,
+input[type="submit"]:hover, input[type="submit"]:focus,
+input[type="button"]:hover, input[type="button"]:focus,
+input[type="reset"]:hover, input[type="reset"]:focus {
+    background-color: #006054;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    outline: none;
+    transform: translateY(-1px);
+}
+button:active,
+input[type="submit"]:active,
+input[type="button"]:active,
+input[type="reset"]:active {
+    background-color: #004D40;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    transform: translateY(0px);
+}
+*/
+
+/* Note: Specific button styles like those in .filters-search-section or .admin-filters-form
+   should be reviewed. If those buttons will now use .btn, then these custom styles might also be redundant
+   or need to be adapted to modify Bootstrap's .btn styles.
+   For now, leaving them active if they are more specific than the global 'button' selector. */
+
+#userInfo, #adminContent {
+    display: none;
+}
+
+table {
+    /* width: 100%; */ /* Bootstrap .table is 100% width by default */
+    /* border-collapse: collapse; */ /* Bootstrap .table handles this */
+    /* margin-top: 1.5em; */ /* Use Bootstrap margin utilities like mt-3, mb-3 */
+    /* margin-bottom: 1.5em; */
+    background-color: #FFFFFF; /* Keep if custom table background is needed */
+    border-radius: 8px; /* Keep if custom table border-radius is needed */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); /* Keep custom shadow */
+    /* overflow: hidden; */ /* May still be useful with border-radius */
+}
+/* th, td { */
+    /* padding: 0.875em 1em; */ /* Bootstrap .table has its own padding, adjust with utility classes if needed */
+    /* text-align: left; */ /* Bootstrap default */
+    /* font-size: 1em; */ /* Bootstrap default */
+    /* border-bottom: 1px solid #E0E0E0; */ /* Bootstrap .table has its own borders */
+/* } */
+/* thead th { */
+    /* background-color: #E0F2F1; */ /* Custom theme for table header, keep */
+    /* color: #004D40; */ /* Custom theme for table header, keep */
+    /* font-weight: 600; */ /* Bootstrap handles this for th */
+/* } */
+/* tbody tr:last-child td { */
+    /* border-bottom: none; */ /* Bootstrap handles borders, this might conflict or be unneeded */
+/* } */
+
+/* tbody tr:nth-child(even) { */
+    /* background-color: #F9F9F9; */ /* Bootstrap has .table-striped for this */
+/* } */
+/* tbody tr:hover { */
+    /* background-color: #EEEEEE; */ /* Bootstrap has .table-hover for this */
+/* } */
+
+/* Custom messages should be kept as they are specific to the application's look */
+.success-message {
+    color: #004D40; /* Dark green/teal text */
+    background-color: #E0F2F1; /* Light green/teal background */
+    padding: 1em; /* Consistent padding */
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 1em;
+    border: 1px solid #A7D7C5; /* Slightly darker border */
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.admin-filters-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
+    margin-bottom: 15px;
+}
+.admin-filters-form div {
+    display: flex;
+    flex-direction: column;
+}
+.admin-filters-form button {
+    grid-column: 1 / -1;
+    width: auto;
+    padding: 8px 20px;
+    justify-self: start;
+}
+
+#editMetadataModal {
+    display: none; /* Initially hidden */
+    position: fixed;
+    z-index: 1050; /* Ensure it's above other content, but potentially below a dedicated overlay */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px; /* Max width for the modal box */
+    background-color: #FFFFFF;
+    padding: 1.5em; /* Consistent padding */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Prominent shadow for modal "pop" */
+    max-height: 85vh; /* Limit height to 85% of viewport height */
+    overflow-y: auto; /* Enable vertical scroll if content exceeds max-height */
+}
+
+#editMetadataModal h3 { /* Modal title styling */
+    margin-top: 0; /* Remove default top margin */
+    margin-bottom: 1em; /* Space after title */
+    /* color: #004D40; */ /* Modal heading color will now use default from h1-h6 or BS modal styles */
+    font-size: 1.5em; /* Consistent with global h3 */
+    line-height: 1.3; /* Adjust line height for heading if necessary */
+}
+
+#editMetadataModal label {
+    /* Global label styles are applied (color, font-weight).
+       Adjust margin if needed for modal context. */
+    margin-top: 0.75em; /* Slightly less top margin within modal if needed */
+    margin-bottom: 0.25em; /* Standard bottom margin */
+}
+
+#editMetadataModal input[type="text"],
+#editMetadataModal textarea,
+#editMetadataModal select {
+    /* Global styles for these inputs are applied (padding, border, border-radius, width 100%, etc.).
+       Ensure consistent bottom margin for spacing within the modal. */
+    margin-bottom: 1em;
+}
+
+#editMetadataModal textarea {
+    min-height: 80px; /* Ensure textarea has a decent default height */
+}
+
+#editMetadataModal button {
+    /* Global button styles are applied.
+       Adjust margins for button layout within the modal. */
+    margin-top: 1em; /* Space above button(s) */
+    margin-right: 0.75em; /* Space between buttons if multiple */
+}
+#editMetadataModal button:last-of-type { /* Remove right margin from the last button */
+    margin-right: 0;
+}
+
+/* If a separate overlay div were used, its style would be:
+.modal-overlay {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1040;
+}
+*/
+
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+    body {
+        font-size: 15px; /* Slightly smaller base font for small screens */
+    }
+
+    .container,
+    section, /* Applies to admin sections */
+    .filters-search-section {
+        margin-left: 1em;
+        margin-right: 1em;
+        padding: 1em;
+    }
+
+    header {
+        padding: 1em;
+    }
+    header h1 {
+        font-size: 1.8em; /* Adjust header title size */
+    }
+
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.6em; }
+    h3 { font-size: 1.3em; }
+
+    .filters-search-section form {
+        flex-direction: column; /* Stack form elements vertically */
+        align-items: stretch; /* Stretch items to full width */
+    }
+    .filters-search-section input[type="search"],
+    .filters-search-section select,
+    .filters-search-section button {
+        width: 100%; /* Make form elements full width */
+        min-width: 0; /* Reset min-width */
+        margin-right: 0; /* Remove right margin if any */
+        margin-bottom: 0.5em; /* Add some space between stacked elements */
+    }
+    .filters-search-section button {
+         margin-top: 0.5em; /* Adjust top margin for button */
+    }
+
+
+    .admin-filters-form {
+        grid-template-columns: 1fr; /* Stack admin filters to a single column */
+    }
+    .admin-filters-form div {
+        margin-bottom: 0.5em;
+    }
+    .admin-filters-form button {
+        width: 100%;
+        justify-self: stretch; /* Make button full width in grid */
+        margin-top: 0.5em;
+    }
+
+
+    .document-item {
+        flex-direction: column; /* Stack thumbnail and info */
+        align-items: center; /* Center items when stacked */
+        text-align: center; /* Center text for info */
+    }
+    .document-thumbnail {
+        margin-right: 0;
+        margin-bottom: 1em; /* Space between thumbnail and info */
+    }
+    .document-info {
+        align-items: center;
+    }
+
+
+    #editMetadataModal {
+        width: 95%;
+        padding: 1em;
+        max-height: 90vh;
+    }
+    #editMetadataModal h3 {
+        font-size: 1.4em;
+    }
+}
+*/
